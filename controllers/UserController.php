@@ -22,4 +22,23 @@ class UserController {
             include 'views/register.php';
         }
     }
+    // Handle user login
+    public function login() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+
+            $user = $this->userModel->login($username, $password);
+            if ($user) {
+                // Start a session and store user data
+                session_start();
+                $_SESSION['user'] = $user;
+                echo "Login successful! Welcome, " . $user['username'];
+            } else {
+                echo "Invalid username or password.";
+            }
+        } else {
+            include 'views/login.php';
+        }
+    }
 }
