@@ -3,54 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpotiPie</title>
+    <title>Spotify Clone</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-white">
     <div class="flex h-screen">
         <!-- Sidebar -->
         <div class="w-64 bg-gray-900 p-5">
-            <div class="text-2xl font-bold mb-5">SpotiPie</div>
+            <div class="text-2xl font-bold mb-5">Spotify</div>
             <ul class="space-y-2">
-                <li><a href="#" class="flex items-center space-x-3 hover:text-white">
+                <li><a href="index.php?action=home" class="flex items-center space-x-3 hover:text-white">
                     <span>Home</span>
                 </a></li>
-                <li><a href="#" class="flex items-center space-x-3 hover:text-white">
-                    <span>Search</span>
-                </a></li>
-                <li><a href="#" class="flex items-center space-x-3 hover:text-white">
-                    <span>Your Library</span>
+                <li><a href="index.php?action=register" class="flex items-center space-x-3 hover:text-white">
+                    <span>Register</span>
                 </a></li>
             </ul>
         </div>
 
         <!-- Main Content -->
         <div class="flex-1 bg-gray-800 p-5">
-            <div class="flex justify-between items-center mb-5">
-                <div class="text-2xl font-bold">Home</div>
-                <div class="flex space-x-4">
-                    <button class="bg-white text-black px-4 py-2 rounded-full">Upgrade</button>
-                    <button class="bg-gray-700 text-white px-4 py-2 rounded-full">Profile</button>
-                </div>
-            </div>
-
-            <!-- Playlist Section -->
+            <div class="text-2xl font-bold mb-5">Playlists</div>
             <div class="grid grid-cols-3 gap-4">
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <img src="https://via.placeholder.com/150" alt="Playlist" class="w-full rounded-lg">
-                    <div class="mt-2 font-bold">Playlist 1</div>
-                    <div class="text-sm text-gray-400">Description of playlist 1</div>
-                </div>
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <img src="https://via.placeholder.com/150" alt="Playlist" class="w-full rounded-lg">
-                    <div class="mt-2 font-bold">Playlist 2</div>
-                    <div class="text-sm text-gray-400">Description of playlist 2</div>
-                </div>
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <img src="https://via.placeholder.com/150" alt="Playlist" class="w-full rounded-lg">
-                    <div class="mt-2 font-bold">Playlist 3</div>
-                    <div class="text-sm text-gray-400">Description of playlist 3</div>
-                </div>
+                <?php if (!empty($playlists)): ?>
+                    <?php foreach ($playlists as $playlist): ?>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <img src="https://via.placeholder.com/150" alt="Playlist" class="w-full rounded-lg">
+                            <div class="mt-2 font-bold"><?= $playlist['name'] ?></div>
+                            <div class="text-sm text-gray-400"><?= $playlist['description'] ?? 'No description' ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="text-gray-400">No playlists found.</div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
