@@ -56,4 +56,12 @@ class UserController {
 
         include 'views/profile.php';
     }
+
+    // controllers/UserController.php
+    public function logout() {
+        session_start();
+        session_destroy();
+        header("Location: index.php?action=home");
+        exit();
+}
 }

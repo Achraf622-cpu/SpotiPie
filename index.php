@@ -3,7 +3,7 @@
 session_start(); // Start the session
 
 // Database connection
-$db = new PDO('mysql:host=localhost;dbname=spotify_clone', 'root', '');
+$db = new PDO('mysql:host=localhost;dbname=spotify_clone', 'root', 'password');
 
 // Include Models
 require 'models/UserModel.php';
@@ -36,6 +36,9 @@ switch ($action) {
         break;
     case 'profile':
         $userController->profile();
+        break;
+    case 'logout':
+        $userController->logout();
         break;
     default:
         echo "404 - Page not found";
