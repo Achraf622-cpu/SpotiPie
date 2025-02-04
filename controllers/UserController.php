@@ -41,4 +41,19 @@ class UserController {
             include 'views/login.php';
         }
     }
+    // Handle profile page
+    public function profile() {
+        session_start();
+        if (!isset($_SESSION['user'])) {
+            // Redirect to login if user is not logged in
+            header("Location: index.php?action=login");
+            exit();
+        }
+
+        $userId = $_SESSION['user']['id'];
+        $likedSongs = $this->userModel->getLikedSongs($userId);
+        $playlists = $this->userModel->getPlaylists($userId);
+
+        include 'views/profile.php';
+    }
 }
