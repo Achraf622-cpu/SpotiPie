@@ -26,4 +26,22 @@ class UserModel {
         }
         return false; // Return false if login fails
     }
+    
+    // Fetch liked songs for a user
+    public function getLikedSongs($userId) {
+        $query = "SELECT s.* FROM Songs s 
+                  JOIN LikedSongs ls ON s.id = ls.song_id 
+                  WHERE ls.user_id = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Fetch playlists for a user
+    public function getPlaylists($userId) {
+        $query = "SELECT * FROM Playlists WHERE user_id = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
