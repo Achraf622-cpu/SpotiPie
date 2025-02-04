@@ -1,8 +1,9 @@
 <?php
-session_start();
+// index.php
+session_start(); // Start the session
 
 // Database connection
-$db = new PDO('mysql:host=localhost;dbname=spotify_clone', 'root', 'password');
+$db = new PDO('mysql:host=localhost;dbname=spotify_clone', 'root', '');
 
 // Include Models
 require 'models/UserModel.php';
@@ -21,7 +22,7 @@ $homeController = new HomeController($playlistModel);
 $userController = new UserController($userModel);
 
 // Simple Routing
-$action = $_GET['action'] ?? 'home';
+$action = $_GET['action'] ?? 'home'; // Default to 'home' if no action is specified
 
 switch ($action) {
     case 'home':
@@ -32,6 +33,9 @@ switch ($action) {
         break;
     case 'login':
         $userController->login();
+        break;
+    case 'profile':
+        $userController->profile();
         break;
     default:
         echo "404 - Page not found";
