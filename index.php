@@ -1,5 +1,5 @@
 <?php
-session_start(); // Start the session
+session_start();
 
 // Database connection
 $db = new PDO('mysql:host=localhost;dbname=spotify_clone', 'root', 'password');
@@ -21,7 +21,7 @@ $homeController = new HomeController($playlistModel);
 $userController = new UserController($userModel);
 
 // Simple Routing
-$action = $_GET['action'] ?? 'home'; // Default to 'home' if no action is specified
+$action = $_GET['action'] ?? 'home';
 
 switch ($action) {
     case 'home':
