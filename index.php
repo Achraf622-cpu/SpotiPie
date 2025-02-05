@@ -6,39 +6,38 @@ session_start(); // Start the session
 $db = new PDO('mysql:host=localhost;dbname=spotify_clone', 'root', 'password');
 
 // Include Models
-require 'models/UserModel.php';
-require 'models/PlaylistModel.php';
+require 'models/User.php';
+require 'models/Utilisateur.php';
+require 'models/Artist.php';
+require 'models/Admin.php';
 
 // Include Controllers
-require 'controllers/HomeController.php';
 require 'controllers/UserController.php';
 
-// Instantiate Models
-$userModel = new UserModel($db);
-$playlistModel = new PlaylistModel($db);
-
 // Instantiate Controllers
-$homeController = new HomeController($playlistModel);
-$userController = new UserController($userModel);
+$userController = new UserController($db);
 
 // Simple Routing
 $action = $_GET['action'] ?? 'home'; // Default to 'home' if no action is specified
 
 switch ($action) {
     case 'home':
-        $homeController->index();
-        break;
-    case 'register':
-        $userController->register();
+        include 'views/home.php';
         break;
     case 'login':
         $userController->login();
         break;
-    case 'profile':
-        $userController->profile();
+    case 'admin_profile':
+        $userController->adminProfile();
         break;
-    case 'logout':
-        $userController->logout();
+    case 'ban_user':
+        $userController->banUser();
+        break;
+    case 'add_category':
+        $userController->addCategory();
+        break;
+    case 'delete_category':
+        $userController->deleteCategory();
         break;
     default:
         echo "404 - Page not found";
