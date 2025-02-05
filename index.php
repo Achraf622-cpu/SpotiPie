@@ -35,6 +35,9 @@ switch ($action) {
     case 'admin_profile':
         $userController->adminProfile();
         break;
+    case 'logout': // Add case for logout action
+        $userController->logout();
+        break;
     case 'ban_user':
         $userController->banUser();
         break;
