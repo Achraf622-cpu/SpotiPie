@@ -56,7 +56,7 @@ CREATE TABLE PlaylistSongs (
     PRIMARY KEY (playlist_id, song_id),
     FOREIGN KEY (playlist_id) REFERENCES Playlists(id),
     FOREIGN KEY (song_id) REFERENCES Songs(id)
-);
+);	
 
 -- Table: LikedSongs
 CREATE TABLE LikedSongs (
@@ -75,3 +75,31 @@ CREATE TABLE FollowedPlaylists (
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (playlist_id) REFERENCES Playlists(id)
 );
+CREATE TABLE Albums (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    artist_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (artist_id) REFERENCES Users(id)
+);
+
+CREATE TABLE Categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+ALTER TABLE Users ADD COLUMN is_banned BOOLEAN DEFAULT FALSE;
+ALTER TABLE Songs ADD COLUMN category_id INT;
+ALTER TABLE Songs ADD FOREIGN KEY (category_id) REFERENCES Categories(id);
+ALTER TABLE Songs ADD COLUMN album_id INT;
+ALTER TABLE Songs ADD FOREIGN KEY (album_id) REFERENCES Albums(id);
+ALTER TABLE Albums ADD COLUMN category_id INT;
+ALTER TABLE Albums ADD FOREIGN KEY (category_id) REFERENCES Categories(id);
+
+INSERT INTO Users (username, email, password, role_id) 
+VALUES ('testuser', 'testuser@example.com', 'hashedpassword', 2);
+-- Insert sample playlists
+INSERT INTO Playlists (name, user_id, is_public) VALUES
+('Chill Hits', 1, TRUE),
+('Workout Beats', 1, TRUE),
+('Study Focus', 1, TRUE);
