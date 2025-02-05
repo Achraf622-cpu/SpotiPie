@@ -8,11 +8,12 @@
 </head>
 <body class="bg-black text-white">
     <div class="flex justify-center items-center h-screen">
-        <form method="POST" class="bg-gray-800 p-8 rounded-lg">
+        <form method="POST" action="index.php?action=register" class="bg-gray-800 p-8 rounded-lg">
             <h2 class="text-2xl font-bold mb-4">Register</h2>
-            <input type="text" name="username" placeholder="Username" class="w-full p-2 mb-4 bg-gray-700 rounded">
-            <input type="email" name="email" placeholder="Email" class="w-full p-2 mb-4 bg-gray-700 rounded">
-            <input type="password" name="password" placeholder="Password" class="w-full p-2 mb-4 bg-gray-700 rounded">
+            <input type="text" name="username" placeholder="Username" class="w-full p-2 mb-4 bg-gray-700 rounded" required>
+            <input type="email" name="email" placeholder="Email" class="w-full p-2 mb-4 bg-gray-700 rounded" required>
+            <input type="password" name="password" placeholder="Password" class="w-full p-2 mb-4 bg-gray-700 rounded" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" class="w-full p-2 mb-4 bg-gray-700 rounded" required>
             <button type="submit" class="w-full bg-green-500 p-2 rounded">Register</button>
         </form>
     </div>

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,15 +14,26 @@
         <div class="w-64 bg-gray-900 p-5">
             <div class="text-2xl font-bold mb-5">SpotiPie</div>
                 <ul class="space-y-2">
-                     <li><a href="index.php?action=home" class="flex items-center space-x-3 hover:text-white">
+                    <li><a href="index.php?action=home" class="flex items-center space-x-3 hover:text-white">
                           <span>Home</span>
                       </a></li>
-                      <li><a href="index.php?action=register" class="flex items-center space-x-3 hover:text-white">
-                           <span>Register</span>
-                       </a></li>
-                     <li><a href="index.php?action=login" class="flex items-center space-x-3 hover:text-white">
-                          <span>Login</span>
-                       </a></li>
+
+                    <?php if (!isset($_SESSION['user'])): ?> <!-- Check if the user is logged in -->
+                        <li><a href="index.php?action=register" class="flex items-center space-x-3 hover:text-white">
+                            <span>Register</span>
+                        </a></li>
+                        <li><a href="index.php?action=login" class="flex items-center space-x-3 hover:text-white">
+                            <span>Login</span>
+                        </a></li>
+                    <?php else: ?> <!-- If logged in, show profile link and hide register/login -->
+                        <li><a href="index.php?action=profile" class="flex items-center space-x-3 hover:text-white">
+                            <span>Profile</span>
+                        </a></li>
+                        <!-- Optionally, you can also add a logout link -->
+                        <li><a href="index.php?action=logout" class="flex items-center space-x-3 hover:text-white">
+                            <span>Logout</span>
+                        </a></li>
+                    <?php endif; ?>
                 </ul>
         </div>
 

@@ -1,9 +1,8 @@
 <?php
 // index.php
 session_start(); // Start the session
-
-// Database connection
-$db = new PDO('mysql:host=localhost;dbname=spotify_clone', 'root', 'password');
+// Load database connection
+require_once 'config.php';
 
 // Include Models
 require 'models/User.php';
@@ -24,8 +23,14 @@ switch ($action) {
     case 'home':
         include 'views/home.php';
         break;
+    case 'register':
+        $userController->register();
+        break;
     case 'login':
         $userController->login();
+        break;
+    case 'profile':
+        include 'views/profile.php';
         break;
     case 'admin_profile':
         $userController->adminProfile();

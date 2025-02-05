@@ -7,31 +7,113 @@ class UserController {
         $this->db = $db;
     }
 
-    // Handle user login
+    public function register() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $username = trim($_POST['username'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+    
+            // Validate inputs
+            if (empty($username) || empty($email) || empty($password) || empty($confirmPassword)) {
+                echo "All fields are required.";
+                return;
+            }
+    
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                echo "Invalid email format.";
+                return;
+            }
+    
+            if ($password !== $confirmPassword) {
+                echo "Passwords do not match.";
+                return;
+            }
+    
+            // Check if username or email already exists
+            $query = "SELECT * FROM Users WHERE username = ? OR email = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$username, $email]);
+            if ($stmt->fetch()) {
+                echo "Username or Email already taken.";
+                return;
+            }
+    
+            // Hash password
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+    
+            // Default role_id = 2 (user)
+            $roleId = 2;
+    
+            // Insert new user
+            $insertQuery = "INSERT INTO Users (username, email, password, role_id) VALUES (?, ?, ?, ?)";
+            $insertStmt = $this->db->prepare($insertQuery);
+    
+            if ($insertStmt->execute([$username, $email, $hashedPassword, $roleId])) {
+                // Get the newly registered user
+                $userId = $this->db->lastInsertId();
+                $query = "SELECT * FROM Users WHERE id = ?";
+                $stmt = $this->db->prepare($query);
+                $stmt->execute([$userId]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+                // Start session and store user info
+                session_start();
+                $_SESSION['user'] = $user;
+    
+                // Redirect to profile page
+                header("Location: index.php?action=profile");
+                exit();
+            } else {
+                echo "Registration failed. Please try again.";
+            }
+        } else {
+            include 'views/register.php';
+        }
+    }
+    
+
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-
+            $username = trim($_POST['username'] ?? '');
+            $password = $_POST['password'] ?? '';
+    
+            // Check if username and password are provided
+            if (empty($username) || empty($password)) {
+                echo "All fields are required.";
+                return;
+            }
+    
+            // Find user in the database
             $query = "SELECT * FROM Users WHERE username = ?";
             $stmt = $this->db->prepare($query);
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    
+            // Verify password
             if ($user && password_verify($password, $user['password'])) {
                 session_start();
-                $_SESSION['user'] = $user;
-
-                // Redirect based on role
+                $_SESSION['user'] = $user; // Store user info in session
+    
+                // Debugging line (remove after checking)
+                // error_log('Redirecting to profile based on role');
+    
+                // Redirect based on the user role
                 switch ($user['role_id']) {
-                    case 1: // Utilisateur
+                    case 1: // Guest
                         header("Location: index.php?action=profile");
                         break;
-                    case 2: // Artist
+                    case 2: // User
+                        header("Location: index.php?action=profile");
+                        break;
+                    case 3: // Artist
                         header("Location: index.php?action=artist_profile");
                         break;
-                    case 3: // Admin
+                    case 4: // Admin
                         header("Location: index.php?action=admin_profile");
+                        break;
+                    default:
+                        echo "Invalid role.";
                         break;
                 }
                 exit();
@@ -42,6 +124,7 @@ class UserController {
             include 'views/login.php';
         }
     }
+    
     // Handle admin profile
     public function adminProfile() {
         session_start();
@@ -100,4 +183,12 @@ class UserController {
             }
         }
     }
+    public function logout() {
+        session_start();
+        session_unset(); // Remove all session variables
+        session_destroy(); // Destroy the session
+        header("Location: index.php?action=home"); // Redirect to the home page after logging out
+        exit();
+    }
+    
 }
