@@ -5,7 +5,7 @@ session_start(); // Start the session
 require_once 'config.php';
 
 // Include Models
-require 'models/User.php';
+require_once 'models/User.php';
 require 'models/Utilisateur.php';
 require 'models/Artist.php';
 require 'models/Admin.php';
