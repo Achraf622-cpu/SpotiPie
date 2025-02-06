@@ -13,55 +13,35 @@ class UserController {
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
             $confirmPassword = $_POST['confirm_password'] ?? '';
-    
+
             // Validate inputs
             if (empty($username) || empty($email) || empty($password) || empty($confirmPassword)) {
                 echo "All fields are required.";
                 return;
             }
-    
+
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 echo "Invalid email format.";
                 return;
             }
-    
+
             if ($password !== $confirmPassword) {
                 echo "Passwords do not match.";
                 return;
             }
-    
+
             // Check if username or email already exists
-            $query = "SELECT * FROM Users WHERE username = ? OR email = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->execute([$username, $email]);
-            if ($stmt->fetch()) {
+            $userModel = new UserModel($this->db); // Assuming UserModel handles db queries
+            if ($userModel->checkIfExists($username, $email)) {
                 echo "Username or Email already taken.";
                 return;
             }
-    
-            // Hash password
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-    
-            // Default role_id = 2 (user)
-            $roleId = 2;
-    
-            // Insert new user
-            $insertQuery = "INSERT INTO Users (username, email, password, role_id) VALUES (?, ?, ?, ?)";
-            $insertStmt = $this->db->prepare($insertQuery);
-    
-            if ($insertStmt->execute([$username, $email, $hashedPassword, $roleId])) {
-                // Get the newly registered user
-                $userId = $this->db->lastInsertId();
-                $query = "SELECT * FROM Users WHERE id = ?";
-                $stmt = $this->db->prepare($query);
-                $stmt->execute([$userId]);
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-                // Start session and store user info
+
+            // Register user
+            if ($userModel->registerUser($username, $email, $password)) {
+                $user = $userModel->findUserByUsername($username);
                 session_start();
                 $_SESSION['user'] = $user;
-    
-                // Redirect to profile page
                 header("Location: index.php?action=profile");
                 exit();
             } else {
@@ -72,63 +52,77 @@ class UserController {
         }
     }
     
+    // In UserController.php
 
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username'] ?? '');
             $password = $_POST['password'] ?? '';
-    
+
             // Check if username and password are provided
             if (empty($username) || empty($password)) {
                 echo "All fields are required.";
                 return;
             }
-    
-            // Find user in the database
-            $query = "SELECT * FROM Users WHERE username = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->execute([$username]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
+            // Use UserModel to find user by username
+            $userModel = new UserModel($this->db);
+            $user = $userModel->findUserByUsername($username);
+
             // Verify password
             if ($user && password_verify($password, $user['password'])) {
                 session_start();
                 $_SESSION['user'] = $user; // Store user info in session
-    
-                // Debugging line (remove after checking)
-                // error_log('Redirecting to profile based on role');
-    
-                // Redirect based on the user role
+
+                // Role-based logic to instantiate the correct model
                 switch ($user['role_id']) {
                     case 1: // Guest
-                        header("Location: index.php?action=profile");
+                        // Instantiate Guest or basic User model
                         break;
-                    case 2: // User
-                        header("Location: index.php?action=profile");
+                    case 2: // Utilisateur
+                        $userModel = new Utilisateur($this->db, $user['id'], $user['username'], $user['role_id']);
                         break;
                     case 3: // Artist
-                        header("Location: index.php?action=artist_profile");
-                        break;
+                        $userModel = new Artist($this->db, $user['id'], $user['username'], $user['role_id']);
+                    break;
                     case 4: // Admin
-                        header("Location: index.php?action=admin_profile");
-                        break;
+                        $userModel = new Admin($this->db, $user['id'], $user['username'], $user['role_id']);
+                    break;
                     default:
                         echo "Invalid role.";
-                        break;
-                }
-                exit();
-            } else {
-                echo "Invalid username or password.";
+                        return;
             }
+
+            // Redirect based on user role
+            switch ($user['role_id']) {
+                case 2: // Utilisateur
+                    header("Location: index.php?action=profile");
+                    break;
+                case 3: // Artist
+                    header("Location: index.php?action=artist_profile");
+                    break;
+                case 4: // Admin
+                    header("Location: index.php?action=admin_profile");
+                    break;
+                default:
+                    echo "Invalid role.";
+                    break;
+            }
+            exit();
         } else {
-            include 'views/login.php';
+            echo "Invalid username or password.";
         }
+    } else {
+        include 'views/login.php';
     }
+}
+
+    
     
     // Handle admin profile
     public function adminProfile() {
         session_start();
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) { // Role ID 3 = Admin
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 4) { // Role ID 4 = Admin
             header("Location: index.php?action=login");
             exit();
         }
@@ -140,6 +134,18 @@ class UserController {
         $categories = $admin->getAllCategories();
 
         include 'views/admin_profile.php';
+    }
+
+    public function artistProfile() {
+        session_start();
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) { // Role ID 3 = Artist
+            header("Location: index.php?action=login");
+            exit();
+        }
+
+        $artist = new Artist($this->db, $_SESSION['user']['id'], $_SESSION['user']['username'], $_SESSION['user']['role_id']);
+        $profile = $artist->getProfile();
+        include 'views/artist_profile.php';
     }
 
     // Handle banning a user
@@ -185,9 +191,9 @@ class UserController {
     }
     public function logout() {
         session_start();
-        session_unset(); // Remove all session variables
-        session_destroy(); // Destroy the session
-        header("Location: index.php?action=home"); // Redirect to the home page after logging out
+        session_unset(); 
+        session_destroy(); 
+        header("Location: index.php?action=home"); 
         exit();
     }
     

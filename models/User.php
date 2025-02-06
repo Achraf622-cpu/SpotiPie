@@ -16,7 +16,7 @@ abstract class User {
     abstract public function getProfile();
     abstract public function logout();
 
-    // Fetch liked songs (common for Utilisateur and Artist)
+
     public function getLikedSongs() {
         $query = "SELECT s.* FROM Songs s 
                   JOIN LikedSongs ls ON s.id = ls.song_id 
