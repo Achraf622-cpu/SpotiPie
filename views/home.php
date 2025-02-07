@@ -17,22 +17,33 @@
                           <span>Home</span>
                       </a></li>
 
-                    <?php if (!isset($_SESSION['user'])): ?> <!-- Check if the user is logged in -->
-                        <li><a href="index.php?action=register" class="flex items-center space-x-3 hover:text-white">
-                            <span>Register</span>
-                        </a></li>
-                        <li><a href="index.php?action=login" class="flex items-center space-x-3 hover:text-white">
-                            <span>Login</span>
-                        </a></li>
-                    <?php else: ?> <!-- If logged in, show profile link and hide register/login -->
-                        <li><a href="index.php?action=profile" class="flex items-center space-x-3 hover:text-white">
-                            <span>Profile</span>
-                        </a></li>
-                        <!-- Optionally, you can also add a logout link -->
-                        <li><a href="index.php?action=logout" class="flex items-center space-x-3 hover:text-white">
-                            <span>Logout</span>
-                        </a></li>
-                    <?php endif; ?>
+                      <?php if (!isset($_SESSION['user'])): ?> 
+    <li><a href="index.php?action=register" class="flex items-center space-x-3 hover:text-white">
+        <span>Register</span>
+    </a></li>
+    <li><a href="index.php?action=login" class="flex items-center space-x-3 hover:text-white">
+        <span>Login</span>
+    </a></li>
+<?php else: ?>
+    <?php if ($_SESSION['user']['role_id'] == 1): ?> 
+        <li><a href="index.php?action=admin_profile" class="flex items-center space-x-3 hover:text-white">
+            <span>Profile</span>
+        </a></li>
+    <?php elseif ($_SESSION['user']['role_id'] == 3): ?> 
+        <li><a href="index.php?action=artist_profile" class="flex items-center space-x-3 hover:text-white">
+            <span>Profile</span>
+        </a></li>
+    <?php else: ?> 
+        <li><a href="index.php?action=user_profile" class="flex items-center space-x-3 hover:text-white">
+            <span>Profile</span>
+        </a></li>
+    <?php endif; ?>
+    
+    <li><a href="index.php?action=logout" class="flex items-center space-x-3 hover:text-white">
+        <span>Logout</span>
+    </a></li>
+<?php endif; ?>
+
                 </ul>
         </div>
 
