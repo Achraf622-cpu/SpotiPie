@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../config.php';
+
 
 class UserController {
     private $db;
 
-    public function __construct($db) {
+    public function __construct(PDO $db) {
         $this->db = $db;
     }
 
@@ -138,7 +140,6 @@ class UserController {
     }
 
     public function artistProfile() {
-        session_start();
         if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) { // Role ID 3 = Artist
             header("Location: index.php?action=login");
             exit();

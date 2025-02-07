@@ -1,17 +1,20 @@
 <?php
-// index.php
 session_start(); // Start the session
+
 // Load database connection
 require_once 'config.php';
 
 // Include Models
-require_once 'models/User.php';
-require 'models/Utilisateur.php';
-require 'models/Artist.php';
-require 'models/Admin.php';
+require_once 'models/UserModel.php'; // This should handle all user-related queries
+require_once 'models/Utilisateur.php';
+require_once 'models/Artist.php';
+require_once 'models/Admin.php';
 
 // Include Controllers
-require 'controllers/UserController.php';
+require_once 'controllers/UserController.php';
+
+// Instantiate Models
+$userModel = new UserModel($db); 
 
 // Instantiate Controllers
 $userController = new UserController($db);
@@ -47,7 +50,12 @@ switch ($action) {
     case 'delete_category':
         $userController->deleteCategory();
         break;
+    case 'artist_profile':  // Add a new case for artist profile
+        $userController->artistProfile(); // This will call the method in the controller
+        break;
     default:
-        echo "404 - Page not found";
+        header("HTTP/1.0 404 Not Found");
+        include 'views/404.php'; // Make sure you have a proper 404 page
         break;
 }
+?>

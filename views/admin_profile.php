@@ -1,4 +1,3 @@
-<!-- views/admin_profile.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

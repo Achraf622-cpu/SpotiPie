@@ -1,4 +1,3 @@
-<!-- views/artist_profile.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,21 +31,36 @@
             <!-- Upload Song Form -->
             <div class="mb-8">
                 <h3 class="text-xl font-bold mb-4">Upload New Song</h3>
-                <form method="POST" action="index.php?action=upload_song" class="bg-gray-700 p-4 rounded-lg">
+                <form method="POST" action="index.php?action=upload_song" enctype="multipart/form-data" class="bg-gray-700 p-4 rounded-lg">
+                    <!-- Song Title -->
                     <input type="text" name="title" placeholder="Song Title" class="w-full p-2 mb-4 bg-gray-600 rounded">
-                    <input type="text" name="artist" placeholder="Artist Name" class="w-full p-2 mb-4 bg-gray-600 rounded">
-                    <input type="text" name="file_path" placeholder="File Path" class="w-full p-2 mb-4 bg-gray-600 rounded">
-                    <input type="number" name="duration" placeholder="Duration (in seconds)" class="w-full p-2 mb-4 bg-gray-600 rounded">
-                    <button type="submit" class="w-full bg-green-500 p-2 rounded">Upload Song</button>
-                </form>
-            </div>
+                    
+                    <!-- Song File -->
+                    <input type="file" name="file" class="w-full p-2 mb-4 bg-gray-600 rounded">
+                    
+                    <!-- Album Selection -->
+                    <select name="album_id" class="w-full p-2 mb-4 bg-gray-600 rounded">
+                        <option value="">Select Album</option>
+                        <?php foreach ($albums as $album): ?>
+                            <option value="<?= $album['id'] ?>"><?= $album['name'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    
+                    <!-- Category Selection -->
+                    <select name="category_id" class="w-full p-2 mb-4 bg-gray-600 rounded">
+                        <option value="">Select Category</option>
+                        <?php foreach ($categories as $category): ?>
+                            <option value="<?= $category['id'] ?>"><?= $category['name'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
 
-            <!-- Upload Album Form -->
-            <div class="mb-8">
-                <h3 class="text-xl font-bold mb-4">Create New Album</h3>
-                <form method="POST" action="index.php?action=create_album" class="bg-gray-700 p-4 rounded-lg">
-                    <input type="text" name="name" placeholder="Album Name" class="w-full p-2 mb-4 bg-gray-600 rounded">
-                    <button type="submit" class="w-full bg-green-500 p-2 rounded">Create Album</button>
+                    <!-- Song Image -->
+                    <input type="file" name="image" accept="image/*" class="w-full p-2 mb-4 bg-gray-600 rounded">
+                    
+                    <!-- Duration -->
+                    <input type="number" name="duration" placeholder="Duration (in seconds)" class="w-full p-2 mb-4 bg-gray-600 rounded">
+
+                    <button type="submit" class="w-full bg-green-500 p-2 rounded">Upload Song</button>
                 </form>
             </div>
 
@@ -57,31 +71,13 @@
                     <?php if (!empty($uploadedSongs)): ?>
                         <?php foreach ($uploadedSongs as $song): ?>
                             <div class="bg-gray-700 p-4 rounded-lg">
-                                <img src="https://via.placeholder.com/150" alt="Song" class="w-full rounded-lg">
+                                <img src="<?= $song['image_url'] ?>" alt="Song" class="w-full rounded-lg">
                                 <div class="mt-2 font-bold"><?= $song['title'] ?></div>
-                                <div class="text-sm text-gray-400"><?= $song['artist'] ?></div>
+                                <div class="text-sm text-gray-400"><?= $song['artist_name'] ?></div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div class="text-gray-400">No songs uploaded yet.</div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Created Albums -->
-            <div>
-                <h3 class="text-xl font-bold mb-4">Your Albums</h3>
-                <div class="grid grid-cols-3 gap-4">
-                    <?php if (!empty($albums)): ?>
-                        <?php foreach ($albums as $album): ?>
-                            <div class="bg-gray-700 p-4 rounded-lg">
-                                <img src="https://via.placeholder.com/150" alt="Album" class="w-full rounded-lg">
-                                <div class="mt-2 font-bold"><?= $album['name'] ?></div>
-                                <div class="text-sm text-gray-400"><?= $album['created_at'] ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="text-gray-400">No albums created yet.</div>
                     <?php endif; ?>
                 </div>
             </div>

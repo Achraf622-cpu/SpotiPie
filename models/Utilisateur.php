@@ -1,5 +1,5 @@
 <?php
-// models/Utilisateur.php
+require_once "User.php";
 class Utilisateur extends User {
     public function getProfile() {
         $likedSongs = $this->getLikedSongs();

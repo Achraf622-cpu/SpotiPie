@@ -1,8 +1,10 @@
 <?php
+require_once __DIR__ . '/../config.php';
+
 class UserModel {
     private $db;
 
-    public function __construct($db) {
+    public function __construct(PDO $db) {
         $this->db = $db;
     }
 
@@ -25,7 +27,7 @@ class UserModel {
     // Find a user by username
     public function findUserByUsername($username) {
         $query = "SELECT * FROM Users WHERE username = ?";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->db->prepare($query); // This line should work if $db is set correctly
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
